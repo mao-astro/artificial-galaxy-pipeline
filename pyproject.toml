@@ -31,6 +31,6 @@ maintainers = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/alexb000/artificial-galaxies/blob/main/Tutorial.ipynb"
-Repository = "https://github.com/alexb000/artificial-galaxies"
-Issues = "https://github.com/alexb000/artificial-galaxies/issues"
+Documentation = "https://github.com/alexb000/artificial-galaxy-pipeline/blob/main/Tutorial.ipynb"
+Repository = "https://github.com/alexb000/artificial-galaxy-pipeline"
+Issues = "https://github.com/alexb000/artificial-galaxy-pipeline/issues"
