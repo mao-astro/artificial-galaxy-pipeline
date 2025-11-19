@@ -1,5 +1,5 @@
 [project]
-name = "artificial-galaxies"
+name = "artificial-galaxy-pipeline"
 version = "1.0.0"
 description = "Pipeline for generating artificial ultra-faint dwarf galaxies"
 readme = "README.md"
