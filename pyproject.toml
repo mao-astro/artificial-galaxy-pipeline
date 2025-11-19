@@ -1,0 +1,36 @@
+[project]
+name = "artificial-galaxies"
+version = "1.0.0"
+description = "Pipeline for generating artificial ultra-faint dwarf galaxies"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+
+dependencies = [
+  "numpy>=2.3",
+  "pandas>=2.2",
+  "astropy>=6.1",
+  "matplotlib>=3.9",
+  "scipy>=1.16",
+  "sep>=1.4",
+  "artpop>=0.1.1",
+  "easyquery>=0.4",
+  "ConditionalGMM>=0.1.2",
+  "scikit-learn>=1.5",
+  "Pillow>=10.4",
+]
+
+authors = [
+  {name = "Alexis Brown"},
+  {name = "Yao-Yuan Mao"},
+]
+
+maintainers = [
+  {name = "Alexis Brown"},
+  {name = "Yao-Yuan Mao"},
+]
+
+[project.urls]
+Documentation = "https://github.com/alexb000/artificial-galaxies/blob/main/Tutorial.ipynb"
+Repository = "https://github.com/alexb000/artificial-galaxies"
+Issues = "https://github.com/alexb000/artificial-galaxies/issues"
