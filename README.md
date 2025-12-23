@@ -10,7 +10,7 @@ This codebase generates artificial galaxies images using **ArtPop** to inject st
 This project was created to support the testing and validation of current UFD search methods.  
 By generating both imaging and photometric data for tens of thousands of artificial galaxies in under a day, this pipeline also enables the development and training of machine learning–based detection models.
 
-If you use this code in research please cite "____" (add in research note)
+If you use this code in research please cite [Alexis H. Brown and Yao-Yuan Mao 2025 Res. Notes AAS 9 318](https://iopscience.iop.org/article/10.3847/2515-5172/ae22ee)
 
 
 ## Authors and Acknowledgments
