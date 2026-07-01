@@ -25,3 +25,4 @@ Built on the following open-source projects:
 - [Conditional GMM](https://github.com/tmcclintock/ConditionalGMM)
 - [scikit-learn](https://scikit-learn.org/stable/)
 - [Astropy](https://www.astropy.org/)
+- [skimage](https://scikit-image.org/)

@@ -18,6 +18,7 @@ dependencies = [
   "ConditionalGMM>=0.1.2",
   "scikit-learn>=1.5",
   "Pillow>=10.4",
+  "skimage>=0.26.0"
 ]
 
 authors = [

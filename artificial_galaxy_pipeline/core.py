@@ -5,6 +5,7 @@ from astropy import wcs
 from astropy.io import fits
 from astropy.table import Table
 from scipy.stats import logistic
+from skimage.transform import rescale
 
 import artpop
 
@@ -13,7 +14,15 @@ from .utils import sdss_rgb, get_decals_viewer_image
 
 __all__ = ["ArtificialGalaxy", "BackgroundImage", "ImageInjector", "artificial_galaxy_generator"]
 
+NATIVE_PIXEL_SCALE = 0.262
 
+def zoom_image(image_dict, zoom_factor):
+    for band in image_dict:
+        H, W = [round(s * zoom_factor) for s in image_dict[band].shape]
+        image_dict[band] = rescale(image_dict[band], zoom_factor, preserve_range=True)
+        #print(f"New Image Shape for {band}: {image_dict[band].shape}")
+    return image_dict
+    
 class ArtificialGalaxy:
     def __init__(
         self,
@@ -23,7 +32,7 @@ class ArtificialGalaxy:
         log_age=9.8,
         feh=-1.9,
         phot_system="DECam",
-        pixel_scale=0.262,
+        pixel_scale=NATIVE_PIXEL_SCALE,
         xy_dim=901,
         random_seed=None,
         name=None,
@@ -141,15 +150,17 @@ class ArtificialGalaxy:
 
 
 class BackgroundImage:
-    def __init__(self, ra, dec, pixel_scale=0.262, xy_dim=901, layer="ls-dr9", cache_dir="image_cache"):
+    def __init__(self, ra, dec, pixel_scale=NATIVE_PIXEL_SCALE, xy_dim=901, layer="ls-dr9", cache_dir="image_cache", zoom_factor=None):
         self.ra = ra
         self.dec = dec
         self.pixel_scale = pixel_scale
         self.xy_dim = xy_dim
         self.layer = layer
         self.cache_dir = cache_dir
+        self.zoom_factor = zoom_factor
 
         self._psf = self._coadd = self._rgb = None
+        
 
     def fetch_psf(self):
         """
@@ -167,6 +178,10 @@ class BackgroundImage:
             cache_dir=self.cache_dir,
         )
         psf = {band: hdulist[i].data for i, band in enumerate("grz")}
+
+        if self.pixel_scale != NATIVE_PIXEL_SCALE:
+            psf = zoom_image(psf, NATIVE_PIXEL_SCALE / self.pixel_scale)
+            
         return psf
 
     def fetch_coadd(self):
@@ -180,6 +195,10 @@ class BackgroundImage:
         )
         cutout = cutout[0].data
         image = {band: cutout[i, :, :] for i, band in enumerate("grz")}
+
+        if self.zoom_factor is not None:
+            image = zoom_image(image, self.zoom_factor)
+            
         return image
 
     @property
@@ -203,18 +222,23 @@ class BackgroundImage:
 
 
 class ImageInjector:
-    def __init__(self, artificial_galaxy=None, background_image=None, center_adjustment=(0, 0), verbose=True):
+    def __init__(self, artificial_galaxy=None, background_image=None, center_adjustment=(0, 0), zoom_factor=None, verbose=True):
         self.artificial_galaxy = artificial_galaxy
         self.background_image = background_image
         self.center_adjustment = np.array(center_adjustment, dtype=int)
         self.verbose = bool(verbose)
+        self.zoom_factor = zoom_factor
 
         assert artificial_galaxy is not None or background_image is not None, "At least one of artificial_galaxy or background_image must be provided."
         assert self.center_adjustment.shape == (2,), "center_adjustment must be a tuple of two integers."
-
+        
+        if artificial_galaxy is not None and background_image is not None:
+            assert artificial_galaxy.pixel_scale == background_image.pixel_scale, "Pixel scales of artificial_galaxy and background_image must match."
+            if artificial_galaxy.pixel_scale != NATIVE_PIXEL_SCALE:
+                print("Warning: Injection should be done at native pixel scale.")
+        
         self.zpt = 22.5
         self.imager = artpop.IdealImager()
-
         self._source_image = self._injected_image = self._rgb = None
 
     @property
@@ -252,6 +276,9 @@ class ImageInjector:
             src = self.source_image
             bkg_slice, src_slice = artpop.util.embed_slices(center, bkg["g"].shape, src["g"].shape)
             self._injected_image = {b: (bkg[b][bkg_slice] + src[b][src_slice]) for b in "grz"}
+
+            if self.zoom_factor is not None:
+                self._injected_image = zoom_image(self._injected_image, self.zoom_factor)
 
         return self._injected_image
 
